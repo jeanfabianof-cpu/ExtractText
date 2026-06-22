@@ -415,7 +415,7 @@ button:hover {
         </div>
         <div class="form-group">
           <label for="concluido_por">Atendimento Concluído por</label>
-          <select id="concluido_por" data-lista="atendentes" data-texto="nomeAtendente" data-placeholder="Selecione o atendente responsável""></select>
+          <select id="concluido_por" data-lista="atendentes" data-texto="nomeAtendente" data-placeholder="Selecione o atendente responsável"></select>
         </div>
       </div>
 
@@ -483,7 +483,7 @@ async function carregarConfig() {
     CONFIG = await configRes.json();
     const servidoresData = await servidoresRes.json();
 
-    CONFIG.servidores = servidoresData;
+    CONFIG.servidores = servidoresData.servidores || servidoresData;
 
     popularSelects();
     renderizarCards(CONFIG.servidores);
