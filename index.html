@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Atendimento</title>
+
+<style>
+:root {
+  --primary: #00923f;
+  --primary-light: #e6f4ec;
+  --primary-hover: #007a35;
+  --primary-soft: #f0fff6;
+  --bg: #f4f6f8;
+  --bg-light: #ffffff;
+  --border: #e5e7eb;
+  --text: #1f2937;
+  --text-muted: #6b7280;
+  --gap: 1.2rem;
+  --radius: 4px;
+}
+
+/* ===== BASE ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  background: var(--bg-light);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  margin: 0 auto;
+}
+
+/* ===== TÍTULO ===== */
+h2 {
+  margin-bottom: 2rem;
+  color: var(--text);
+  text-align: center;
+}
+
+/* ===== FORM ESTRUTURA ===== */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ===== GRUPOS (GRID PRINCIPAL) ===== */
+.grupo {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* ELEMENTO QUE OCUPA LINHA TODA */
+.full {
+  grid-column: 1 / -1;
+}
+
+/* ===== CAMPOS ===== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.required::after {
+  content: " *";
+  color: #ef4444;
+}
+
+/* INPUTS */
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  background: #fff;
+  color: #000;
+}
+
+input,
+select {
+  height: 42px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* ===== CARD SELECT ===== */
+.card-select {
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: repeat(3, 1fr);
+}
+
+
+
+/* ===== CARD ===== */
+.card {
+  border-radius: var(--radius);
+  padding: 1rem;
+  background: #fff;
+  border-top: 4px solid var(--primary);
+  cursor: pointer;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: all 0.2s ease;
+}
+
+.card-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.card:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.card:focus-visible {
+  outline: none;
+  border: 2px solid #00923f;
+  box-shadow: 0 0 0 3px rgba(0, 146, 63, 0.25);
+}
+
+.card.selected {
+  border: 4px solid var(--primary);
+  outline: 2px solid var(--primary-light);
+  background: var(--primary-soft);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.card.selected .label,
+.card.selected .value {
+  background: transparent;
+  border: none;
+  color: #000;
+}
+
+.card:has(.card-radio:checked) {
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,146,63,0.25);
+}
+
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+legend {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  display: block;
+  width: 100%;
+}
+
+.status {
+  margin-left: 8px;
+  font-size: 0.82rem;
+  color: #fff;
+  background: var(--primary);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* HEADER */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.titulo {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* GRID INTERNO DO CARD */
+.card-grid {
+  margin-top: 0.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px 10px;
+  font-size: 0.85rem;
+}
+
+.label {
+  color: var(--text-muted);
+}
+
+.value {
+  font-weight: 600;
+  background: #f9fafb;
+  border: 1px solid var(--border);
+  padding: 4px 6px;
+  border-radius: 4px;
+  word-break: break-word;
+  color: #333;
+  min-height: 16px;
+  align-items: center;
+  display: flex;
+}
+
+.vazio-texto {
+  color: #9aa0a6;
+  font-style: italic;
+  letter-spacing: 0.2px;
+}
+
+/* ===== BOTÃO ===== */
+button {
+  margin-top: 2rem;
+  width: 100%;
+  padding: 0.9rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.95;
+}
+
+/* ===== RESPONSIVO ===== */
+/* Tablet */
+@media (max-width: 1024px) {
+  .card-select {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .card-select {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .grupo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  body {
+    padding: 1rem;
+  }
+
+  .container {
+    padding: 1.2rem;
+  }
+
+  .grupo {
+    grid-template-columns: 1fr;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-select {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 594px) {
+  .card {
+    padding: 10px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Cadastro de Atendimento</h2>
+
+  <form id="form_cadastro_atendimento">
+
+    <div class="form-grid">
+
+      <div class="grupo">
+        <div class="form-group">
+          <label class="required" for="data_inicio">Data Inicial do Atendimento</label>
+          <input type="date" id="data_inicio" name="data_inicio" required>
+        </div>
+
+        <div class="form-group">
+          <label class="required" for="hora_inicio">Hora Inicial do Atendimento</label>
+          <input type="time" id="hora_inicio" name="hora_inicio">
+        </div>
+
+        <div class="form-group">
+          <label class="required" for="atendente">Atendente</label>
+          <select id="atendente" data-lista="atendentes" data-texto="nomeAtendente" data-placeholder="Selecione um atendente"></select>
+        </div>
+
+        <div class="form-group">
+          <label id="label_select"  class="required" for="canal">Canal de Atendimento</label>
+          <select id="canal" data-lista="canaisAtendimento" data-texto="canalAtendimento" data-placeholder="Selecione um canal de atendimento"></select>
+        </div>
+      </div>
+      
+      <div class="grupo">
+        <div class="form-group">
+          <label class="required" for="nome_solicitante">Nome do Solicitante</label>
+          <input type="text" id="nome_solicitante" name="nome_solicitante">
+        </div>
+      </div>
+
+      <div class="grupo">
+        <!-- CARD SELECT -->
+        <fieldset class="form-group full">
+          <legend>Selecionar SIAPE</legend>
+
+          <div class="card-select" id="lista-servidores"></div>
+        </fieldset>
+      </div>
+
+      <div class="grupo">
+        <div class="form-group">
+          <label class="required" for="cargo_solicitante">Cargo</label>
+          <input type="text" id="cargo_solicitante" name="cargo_solicitante">
+        </div>
+
+        <div class="form-group">
+          <label class="required" for="exercicio_solicitante">Exercício</label>
+          <input type="text" id="exercicio_solicitante" name="exercicio_solicitante">
+        </div>
+      </div>
+
+      <div class="grupo">
+        <div class="form-group">
+          <label class="required" for="grupo_solicitacao">Grupo da Solicitação</label>
+          <select id="grupo_solicitacao" data-lista="gruposSolicitacao" data-texto="grupoSolicitacao" data-placeholder="Selecione um grupo de solicitação"></select>
+        </div>
+      
+        <div class="form-group">
+          <label class="required" for="solicitacao">Solicitação</label>
+          <select id="solicitacao" data-lista="solicitacoes" data-texto="solicitacao" data-placeholder="Selecione a solicitação"></select>
+        </div>
+
+        <div class="form-group">
+          <label for="processo">Processo</label>
+          <input type="text" id="processo" name="processo">
+        </div>
+
+        <div class="form-group">
+          <label class="required" for="status_atendimento">Status do Atendimento</label>
+          <select id="status_atendimento" data-lista="statusAtendimento" data-texto="status" data-placeholder="Selecione o status do atendimento"></select>
+        </div>
+      </div>
+
+      <div class="grupo">
+        <div class="form-group full">
+          <label for="detalhes_solicitacao">Detalhes da Solicitação</label>
+          <textarea id="detalhes_solicitacao" name="detalhes_solicitacao"></textarea>
+        </div>
+      </div>
+
+      <div class="grupo">
+        <div class="form-group">
+          <label for="data_conclusao_atendimento">Data de Conclusão do Atendimento</label>
+          <input type="date" id="data_conclusao_atendimento" name="data_conclusao_atendimento">
+        </div>
+        <div class="form-group">
+          <label for="hora_conclusao_atendimento">Hora de Conclusão do Atendimento</label>
+          <input type="time" id="hora_conclusao_atendimento" name="hora_conclusao_atendimento">
+        </div>
+        <div class="form-group">
+          <label for="concluido_por">Atendimento Concluído por</label>
+          <select id="concluido_por" data-lista="atendentes" data-texto="nomeAtendente" data-placeholder="Selecione o atendente responsável"></select>
+        </div>
+      </div>
+
+      <div class="grupo">
+        <div class="form-group">
+          <label for="area_responsavel">Área responsável</label>
+          <input type="text" id="area_responsavel" name="area_responsavel">
+          <!--<select id="area_responsavel" data-lista="" data-texto=""></select>-->
+        </div>
+        <div class="form-group">
+          <label for="responsavel_tecnico">Responsável Técnico</label>
+          <input type="text" id="responsavel_tecnico" name="responsavel_tecnico">
+          <!--<select id="responsavel_tecnico" data-lista="" data-texto=""></select>-->
+        </div>
+      </div>
+      <div class="grupo">
+        <div class="form-group">
+          <label for="prazo_resposta">Prazo de resposta</label>
+          <input type="date" id="prazo_resposta" name="prazo_resposta">
+        </div>
+
+        <div class="form-group">
+          <label for="dias_atraso">Dias em atraso</label>
+          <input type="text" id="dias_atraso" name="dias_atraso" readonly>
+        </div>
+      </div>
+
+    </div>
+
+    <button type="submit">Salvar Atendimento</button>
+
+  </form>
+</div>
+
+<script>
+/* ================================
+   ESTADO GLOBAL
+================================ */
+let CONFIG = {};
+let listaAtualServidores = [];
+let servidorSelecionado = null;
+
+/* ================================
+   ELEMENTOS
+================================ */
+const inputNome = document.getElementById("nome_solicitante");
+const inputCargo = document.getElementById("cargo_solicitante");
+const inputExercicio = document.getElementById("exercicio_solicitante");
+const containerCards = document.getElementById("lista-servidores");
+
+/* ================================
+   FETCH CONFIG.JSON
+================================ */
+async function carregarConfig() {
+  try {
+    const [configRes, servidoresRes] = await Promise.all([
+      fetch("./config.json"),
+      fetch("./servidores.json")
+    ]);
+
+    if (!configRes.ok || !servidoresRes.ok) {
+      throw new Error("Erro ao carregar JSONs");
+    }
+
+    CONFIG = await configRes.json();
+    const servidoresData = await servidoresRes.json();
+
+    CONFIG.servidores = servidoresData.servidores || servidoresData;
+
+    popularSelects();
+    renderizarCards(CONFIG.servidores);
+
+  } catch (erro) {
+    console.error("Erro ao carregar JSON:", erro);
+  }
+}
+
+/* ================================
+   POPULAR SELECTS DINÂMICOS
+================================ */
+function popularSelects() {
+  const selects = document.querySelectorAll("select[data-lista]");
+
+  selects.forEach(select => {
+    const lista = select.dataset.lista;
+    const texto = select.dataset.texto;
+    const placeholder = select.dataset.placeholder;
+
+    const dados = CONFIG[lista];
+
+    if (!dados) return;
+
+    select.innerHTML = `<option value="">${placeholder}</option>`;
+
+    dados.forEach(item => {
+      const option = document.createElement("option");
+      option.value = item.id || item.codigo || item[texto];
+      option.textContent = item[texto];
+      select.appendChild(option);
+    });
+  });
+}
+
+/* ================================
+   FILTRO POR NOME
+================================ */
+inputNome.addEventListener("input", function () {
+  const valor = this.value.trim().toLowerCase();
+
+  const base = CONFIG.servidores || [];
+
+  const filtrados = !valor
+    ? base
+    : base.filter(s => (s.nome || "").toLowerCase().includes(valor));
+
+  renderizarCards(filtrados);
+});
+
+/* ================================
+   RENDER DOS CARDS
+================================ */
+function renderizarCards(lista) {
+  lista.sort((a, b) => Number(b.siape) - Number(a.siape));
+
+  listaAtualServidores = lista;
+  containerCards.innerHTML = "";
+
+  if (!lista.length) {
+    containerCards.innerHTML =
+      "<p>Servidor não encontrado. Cadastre manualmente.</p>";
+    return;
+  }
+
+  lista.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.tabIndex = 0;
+
+    card.innerHTML = `
+      <input type="radio" name="siape" value="${item.id || item.siape}" class="card-radio">
+
+      <div class="card-header">
+        <span class="titulo">${item.siape || "—"}</span>
+      </div>
+
+      <div class="card-grid">
+        <span class="label">Nome</span>
+        <span class="value">${valorSeguro(item.nome)}</span>
+
+        <span class="label">Cargo</span>
+        <span class="value">${valorSeguro(item.cargo)}</span>
+
+        <span class="label">Regime Jurídico</span>
+        <span class="value">${valorSeguro(item.regime)}</span>
+
+        <span class="label">CPF</span>
+        <span class="value">${valorSeguro(item.cpf)}</span>
+
+        <span class="label">UORG de Emissão</span>
+        <span class="value">${valorSeguro(item.siglaUorgEmissao)}</span>
+
+        <span class="label">UF da UORG</span>
+        <span class="value">${valorSeguro(item.ufUorgEmissao)}</span>
+
+        <span class="label">Nome da UORG</span>
+        <span class="value">${valorSeguro(item.nomeUorgEmissao)}</span>
+
+        <span class="label">Data de Exclusão</span>
+        <span class="value">${valorSeguro(converterDataExcel(item.dataExclusao))}</span>
+
+        <span class="label">Data de Inatividade</span>
+        <span class="value">${valorSeguro(converterDataExcel(item.dataInatividade))}</span>
+
+        <span class="label">Ingresso Órgão</span>
+        <span class="value">${valorSeguro(converterDataExcel(item.dataIngressoOrgao))}</span>
+
+        <span class="label">Ingresso Serviço Público</span>
+        <span class="value">${valorSeguro(converterDataExcel(item.dataIngressoServicoPublico))}</span>
+      </div>
+    `;
+
+    /* CLICK */
+    card.addEventListener("click", () => selecionarServidor(item));
+
+    /* KEYBOARD */
+    card.addEventListener("keydown", (event) => {
+      const cards = Array.from(containerCards.querySelectorAll(".card"));
+      const index = cards.indexOf(card);
+
+      let novoIndex = index;
+
+      if (event.key === "ArrowDown" || event.key === "ArrowRight") novoIndex++;
+      if (event.key === "ArrowUp" || event.key === "ArrowLeft") novoIndex--;
+
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selecionarServidor(item);
+        return;
+      }
+
+      if (novoIndex < 0 || novoIndex >= cards.length) return;
+
+      event.preventDefault();
+      cards[novoIndex].focus();
+    });
+
+    containerCards.appendChild(card);
+  });
+
+  aplicarSelecaoVisual();
+}
+
+/* ================================
+   SELEÇÃO
+================================ */
+function selecionarServidor(item) {
+  servidorSelecionado = item;
+
+  preencherFormularioServidor(item);
+  inputNome.value = item.nome || "";
+
+  const filtrados = (CONFIG.servidores || []).filter(s =>
+    (s.nome || "").toLowerCase().includes((item.nome || "").toLowerCase())
+  );
+
+  renderizarCards(filtrados);
+}
+
+/* ================================
+   VISUAL SELEÇÃO
+================================ */
+function aplicarSelecaoVisual() {
+  if (!servidorSelecionado) return;
+
+  const cards = document.querySelectorAll(".card");
+
+  cards.forEach(card => {
+    const input = card.querySelector("input");
+
+    const isSelected = input && input.value == (servidorSelecionado.id || servidorSelecionado.siape);
+
+    card.classList.toggle("selected", isSelected);
+
+    if (isSelected) {
+      input.checked = true;
+
+      if (!card.querySelector(".status")) {
+        const status = document.createElement("span");
+        status.className = "status";
+        status.textContent = "Selecionado";
+        card.querySelector(".card-header")?.appendChild(status);
+      }
+    }
+  });
+}
+
+/* ================================
+   PREENCHER FORM
+================================ */
+function preencherFormularioServidor(item) {
+  if (inputNome) inputNome.value = item.nome || "";
+  if (inputCargo) inputCargo.value = item.cargo || "";
+  if (inputExercicio)
+    inputExercicio.value = `${item.siglaUorgEmissao || ""}-${item.ufUorgEmissao || ""}`;
+}
+
+/* ================================
+   UTILS
+================================ */
+function converterDataExcel(numero) {
+  if (!numero) return "—";
+  const data = new Date((numero - 25569) * 86400 * 1000);
+  return data.toLocaleDateString("pt-BR");
+}
+
+function valorSeguro(valor, texto = "Não informado") {
+  return (!valor)
+    ? `<span class="vazio-texto">${texto}</span>`
+    : valor;
+}
+
+/* ================================
+   SUBMIT
+================================ */
+document.getElementById("form_cadastro_atendimento")
+  .addEventListener("submit", (event) => {
+    event.preventDefault();
+    const dados = Object.fromEntries(new FormData(event.target).entries());
+    console.log("Dados enviados:", dados);
+  });
+
+/* ================================
+   INIT
+================================ */
+carregarConfig();
+</script>
+</body>
+</html>
