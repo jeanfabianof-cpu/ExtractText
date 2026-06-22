@@ -471,14 +471,22 @@ const containerCards = document.getElementById("lista-servidores");
 ================================ */
 async function carregarConfig() {
   try {
-    const response = await fetch("./config.json");
+    const [configRes, servidoresRes] = await Promise.all([
+      fetch("./config.json"),
+      fetch("./servidores.json")
+    ]);
 
-    if (!response.ok) throw new Error("Erro ao carregar config.json");
+    if (!configRes.ok || !servidoresRes.ok) {
+      throw new Error("Erro ao carregar JSONs");
+    }
 
-    CONFIG = await response.json();
+    CONFIG = await configRes.json();
+    const servidoresData = await servidoresRes.json();
+
+    CONFIG.servidores = servidoresData;
 
     popularSelects();
-    renderizarCards(CONFIG.servidores || []);
+    renderizarCards(CONFIG.servidores);
 
   } catch (erro) {
     console.error("Erro ao carregar JSON:", erro);
