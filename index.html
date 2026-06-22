@@ -1,82 +1,682 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Extrator de PDF</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Atendimento</title>
 
-  <!-- PDF.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<style>
+:root {
+  --primary: #00923f;
+  --primary-light: #e6f4ec;
+  --primary-hover: #007a35;
+  --primary-soft: #f0fff6;
+  --bg: #f4f6f8;
+  --bg-light: #ffffff;
+  --border: #e5e7eb;
+  --text: #1f2937;
+  --text-muted: #6b7280;
+  --gap: 1.2rem;
+  --radius: 4px;
+}
+
+/* ===== BASE ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  background: var(--bg-light);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  margin: 0 auto;
+}
+
+/* ===== TÍTULO ===== */
+h2 {
+  margin-bottom: 2rem;
+  color: var(--text);
+  text-align: center;
+}
+
+/* ===== FORM ESTRUTURA ===== */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ===== GRUPOS (GRID PRINCIPAL) ===== */
+.grupo {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* ELEMENTO QUE OCUPA LINHA TODA */
+.full {
+  grid-column: 1 / -1;
+}
+
+/* ===== CAMPOS ===== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.required::after {
+  content: " *";
+  color: #ef4444;
+}
+
+/* INPUTS */
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  background: #fff;
+  color: #000;
+}
+
+input,
+select {
+  height: 42px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* ===== CARD SELECT ===== */
+.card-select {
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: repeat(3, 1fr);
+}
+
+
+
+/* ===== CARD ===== */
+.card {
+  border-radius: var(--radius);
+  padding: 1rem;
+  background: #fff;
+  border-top: 4px solid var(--primary);
+  cursor: pointer;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: all 0.2s ease;
+}
+
+.card-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.card:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.card:focus-visible {
+  outline: none;
+  border: 2px solid #00923f;
+  box-shadow: 0 0 0 3px rgba(0, 146, 63, 0.25);
+}
+
+.card.selected {
+  border: 4px solid var(--primary);
+  outline: 2px solid var(--primary-light);
+  background: var(--primary-soft);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.card.selected .label,
+.card.selected .value {
+  background: transparent;
+  border: none;
+  color: #000;
+}
+
+.card:has(.card-radio:checked) {
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,146,63,0.25);
+}
+
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+legend {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  display: block;
+  width: 100%;
+}
+
+.status {
+  margin-left: 8px;
+  font-size: 0.82rem;
+  color: #fff;
+  background: var(--primary);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* HEADER */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.titulo {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* GRID INTERNO DO CARD */
+.card-grid {
+  margin-top: 0.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px 10px;
+  font-size: 0.85rem;
+}
+
+.label {
+  color: var(--text-muted);
+}
+
+.value {
+  font-weight: 600;
+  background: #f9fafb;
+  border: 1px solid var(--border);
+  padding: 4px 6px;
+  border-radius: 4px;
+  word-break: break-word;
+  color: #333;
+  min-height: 16px;
+  align-items: center;
+  display: flex;
+}
+
+.vazio-texto {
+  color: #9aa0a6;
+  font-style: italic;
+  letter-spacing: 0.2px;
+}
+
+/* ===== BOTÃO ===== */
+button {
+  margin-top: 2rem;
+  width: 100%;
+  padding: 0.9rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.95;
+}
+
+/* ===== RESPONSIVO ===== */
+/* Tablet */
+@media (max-width: 1024px) {
+  .card-select {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .card-select {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .grupo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  body {
+    padding: 1rem;
+  }
+
+  .container {
+    padding: 1.2rem;
+  }
+
+  .grupo {
+    grid-template-columns: 1fr;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-select {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 594px) {
+  .card {
+    padding: 10px;
+  }
+}
+</style>
 </head>
 
 <body>
-  <h2>Extrair texto do PDF</h2>
-  <input type="file" id="fileInput" />
 
-  <script>
-    // worker
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
+<div class="container">
+  <h2>Cadastro de Atendimento</h2>
 
-    document.getElementById("fileInput").addEventListener("change", async function (e) {
+  <form id="form_cadastro_atendimento">
 
-      const file = e.target.files[0];
-      if (!file) return;
+    <div class="form-grid">
 
-      const trechoBuscado = prompt("Qual trecho deseja buscar? (ex: 20.2.2.1)");
-      if (!trechoBuscado) return;
+      <div class="grupo">
+        <div class="form-group">
+          <label class="required" for="data_inicio">Data Inicial do Atendimento</label>
+          <input type="date" id="data_inicio" name="data_inicio" required>
+        </div>
 
-      const reader = new FileReader();
+        <div class="form-group">
+          <label class="required" for="hora_inicio">Hora Inicial do Atendimento</label>
+          <input type="time" id="hora_inicio" name="hora_inicio">
+        </div>
 
-      reader.onload = async function () {
-        const typedarray = new Uint8Array(this.result);
+        <div class="form-group">
+          <label class="required" for="atendente">Atendente</label>
+          <select id="atendente" data-lista="atendentes" data-texto="nomeAtendente" data-placeholder="Selecione um atendente"></select>
+        </div>
 
-        const pdf = await pdfjsLib.getDocument(typedarray).promise;
+        <div class="form-group">
+          <label id="label_select"  class="required" for="canal">Canal de Atendimento</label>
+          <select id="canal" data-lista="canaisAtendimento" data-texto="canalAtendimento" data-placeholder="Selecione um canal de atendimento"></select>
+        </div>
+      </div>
+      
+      <div class="grupo">
+        <div class="form-group">
+          <label class="required" for="nome_solicitante">Nome do Solicitante</label>
+          <input type="text" id="nome_solicitante" name="nome_solicitante">
+        </div>
+      </div>
 
-        let textoCompleto = "";
+      <div class="grupo">
+        <!-- CARD SELECT -->
+        <fieldset class="form-group full">
+          <legend>Selecionar SIAPE</legend>
 
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const content = await page.getTextContent();
+          <div class="card-select" id="lista-servidores"></div>
+        </fieldset>
+      </div>
 
-          const strings = content.items.map(item => item.str);
-          textoCompleto += strings.join(" ") + "\n";
-        }
+      <div class="grupo">
+        <div class="form-group">
+          <label class="required" for="cargo_solicitante">Cargo</label>
+          <input type="text" id="cargo_solicitante" name="cargo_solicitante">
+        </div>
 
-        const inicio = textoCompleto.indexOf(trechoBuscado);
+        <div class="form-group">
+          <label class="required" for="exercicio_solicitante">Exercício</label>
+          <input type="text" id="exercicio_solicitante" name="exercicio_solicitante">
+        </div>
+      </div>
 
-        if (inicio === -1) {
-          alert("Trecho não encontrado.");
-          return;
-        }
+      <div class="grupo">
+        <div class="form-group">
+          <label class="required" for="grupo_solicitacao">Grupo da Solicitação</label>
+          <select id="grupo_solicitacao" data-lista="gruposSolicitacao" data-texto="grupoSolicitacao" data-placeholder="Selecione um grupo de solicitação"></select>
+        </div>
+      
+        <div class="form-group">
+          <label class="required" for="solicitacao">Solicitação</label>
+          <select id="solicitacao" data-lista="solicitacoes" data-texto="solicitacao" data-placeholder="Selecione a solicitação"></select>
+        </div>
 
-        let texto = textoCompleto.slice(inicio);
+        <div class="form-group">
+          <label for="processo">Processo</label>
+          <input type="text" id="processo" name="processo">
+        </div>
 
-        // =============================
-        // 🔥 FORMATAÇÃO
-        // =============================
-        texto = texto
-          .replace(/(\d+(?:\.\d+)+)/g, "§$1§")   // protege 20.2.2.1
-          .replace(/(\d+\.\d+)/g, "§$1§")        // protege 4.1
-          .replace(/(\d+)\s/g, "\n$1 ")          // quebra itens
-          .replace(/§/g, "")                    // restaura
-          .replace(/\.([0-9]+\.[0-9]+)/g, ". $1") // espaço subitens
-          .replace(/\n+/g, "\n")
-          .trim();
+        <div class="form-group">
+          <label class="required" for="status_atendimento">Status do Atendimento</label>
+          <select id="status_atendimento" data-lista="statusAtendimento" data-texto="status" data-placeholder="Selecione o status do atendimento"></select>
+        </div>
+      </div>
 
-        console.log("===== RESULTADO =====");
-        console.log(texto);
+      <div class="grupo">
+        <div class="form-group full">
+          <label for="detalhes_solicitacao">Detalhes da Solicitação</label>
+          <textarea id="detalhes_solicitacao" name="detalhes_solicitacao"></textarea>
+        </div>
+      </div>
 
-        // gerar TXT
-        const blob = new Blob([texto], { type: "text/plain" });
-        const link = document.createElement("a");
+      <div class="grupo">
+        <div class="form-group">
+          <label for="data_conclusao_atendimento">Data de Conclusão do Atendimento</label>
+          <input type="date" id="data_conclusao_atendimento" name="data_conclusao_atendimento">
+        </div>
+        <div class="form-group">
+          <label for="hora_conclusao_atendimento">Hora de Conclusão do Atendimento</label>
+          <input type="time" id="hora_conclusao_atendimento" name="hora_conclusao_atendimento">
+        </div>
+        <div class="form-group">
+          <label for="concluido_por">Atendimento Concluído por</label>
+          <select id="concluido_por" data-lista="atendentes" data-texto="nomeAtendente" data-placeholder="Selecione o atendente responsável""></select>
+        </div>
+      </div>
 
-        link.href = URL.createObjectURL(blob);
-        link.download = "resultado.txt";
-        link.click();
-      };
+      <div class="grupo">
+        <div class="form-group">
+          <label for="area_responsavel">Área responsável</label>
+          <input type="text" id="area_responsavel" name="area_responsavel">
+          <!--<select id="area_responsavel" data-lista="" data-texto=""></select>-->
+        </div>
+        <div class="form-group">
+          <label for="responsavel_tecnico">Responsável Técnico</label>
+          <input type="text" id="responsavel_tecnico" name="responsavel_tecnico">
+          <!--<select id="responsavel_tecnico" data-lista="" data-texto=""></select>-->
+        </div>
+      </div>
+      <div class="grupo">
+        <div class="form-group">
+          <label for="prazo_resposta">Prazo de resposta</label>
+          <input type="date" id="prazo_resposta" name="prazo_resposta">
+        </div>
 
-      reader.readAsArrayBuffer(file);
+        <div class="form-group">
+          <label for="dias_atraso">Dias em atraso</label>
+          <input type="text" id="dias_atraso" name="dias_atraso" readonly>
+        </div>
+      </div>
+
+    </div>
+
+    <button type="submit">Salvar Atendimento</button>
+
+  </form>
+</div>
+
+<script src="config.js"></script>
+<script src="servidores.js"></script>
+<script>
+/* ================================
+   ESTADO GLOBAL
+================================ */
+let listaAtualServidores = [];
+let servidorSelecionado = null;
+
+/* ================================
+   ELEMENTOS
+================================ */
+const inputNome = document.getElementById("nome_solicitante");
+const inputCargo = document.getElementById("cargo_solicitante");
+const inputExercicio = document.getElementById("exercicio_solicitante");
+const containerCards = document.querySelector(".card-select");
+
+/* ================================
+   FILTRO POR NOME
+================================ */
+inputNome.addEventListener("input", function () {
+  const valor = this.value.trim().toLowerCase();
+
+  const base = servidores.servidores;
+
+  const filtrados = !valor
+    ? base
+    : base.filter(s => s.nome.toLowerCase().includes(valor));
+
+  renderizarCards(filtrados);
+});
+
+
+/* ================================
+   RENDER DOS CARDS
+================================ */
+function renderizarCards(lista) {
+  lista.sort((a, b) => Number(b.siape) - Number(a.siape));
+
+  listaAtualServidores = lista;
+  containerCards.innerHTML = "";
+
+  if (!lista.length) {
+    containerCards.innerHTML =
+      "<p>Servidor não encontrado. Cadastre manualmente.</p>";
+    return;
+  }
+
+  lista.forEach((item, index) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.tabIndex = 0;
+
+    card.innerHTML = `
+      <input type="radio" name="siape" value="${item.id}" class="card-radio">
+
+      <div class="card-header">
+        <span class="titulo">${item.siape}</span>
+      </div>
+
+      <div class="card-grid">
+        <span class="label">Nome</span>
+        <span class="value">${valorSeguro(item.nome)}</span>
+
+        <span class="label">Cargo</span>
+        <span class="value">${valorSeguro(item.cargo)}</span>
+
+        <span class="label">Regime Jurídico</span>
+        <span class="value">${valorSeguro(item.regime)}</span>
+
+        <span class="label">CPF</span>
+        <span class="value">${valorSeguro(item.cpf)}</span>
+
+        <span class="label">UORG de Emissão</span>
+        <span class="value">${valorSeguro(item.siglaUorgEmissao)}</span>
+
+        <span class="label">UF da UORG</span>
+        <span class="value">${valorSeguro(item.ufUorgEmissao)}</span>
+
+        <span class="label">Nome da UORG</span>
+        <span class="value">${valorSeguro(item.nomeUorgEmissao)}</span>
+
+        <span class="label">Data de Exclusão</span>
+        <span class="value">${valorSeguro(converterDataExcel(item.dataExclusao))}</span>
+
+        <span class="label">Data de Inatividade</span>
+        <span class="value">${valorSeguro(converterDataExcel(item.dataInatividade))}</span>
+
+        <span class="label">Ingresso Órgão</span>
+        <span class="value">${valorSeguro(converterDataExcel(item.dataIngressoOrgao))}</span>
+
+        <span class="label">Ingresso Serviço Público</span>
+        <span class="value">${valorSeguro(converterDataExcel(item.dataIngressoServicoPublico))}</span>
+      </div>
+    `;
+
+    /* ================================
+       CLICK
+    ================================= */
+    card.addEventListener("click", () => {
+      selecionarServidor(item);
     });
-  </script>
+
+    /* ================================
+       KEYBOARD
+    ================================= */
+    card.addEventListener("keydown", (event) => {
+
+      const cards = Array.from(containerCards.querySelectorAll(".card"));
+      const index = cards.indexOf(card);
+
+      let novoIndex = index;
+
+      if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+        novoIndex++;
+      }
+
+      if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+        novoIndex--;
+      }
+
+      /* ENTER ou SPACE seleciona */
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selecionarServidor(item);
+        return;
+      }
+
+      /* navegação */
+      if (novoIndex < 0 || novoIndex >= cards.length) return;
+
+      event.preventDefault();
+      cards[novoIndex].focus();
+    });
+
+    containerCards.appendChild(card);
+  });
+
+  aplicarSelecaoVisual();
+}
+
+
+/* ================================
+   SELEÇÃO PRINCIPAL
+================================ */
+function selecionarServidor(item) {
+  servidorSelecionado = item;
+
+  preencherFormularioServidor(item);
+
+  inputNome.value = item.nome;
+
+  const filtrados = servidores.servidores.filter(s =>
+    s.nome.toLowerCase().includes(item.nome.toLowerCase())
+  );
+
+  renderizarCards(filtrados);
+}
+
+
+/* ================================
+   MARCAR CARD SELECIONADO
+================================ */
+function aplicarSelecaoVisual() {
+  if (!servidorSelecionado) return;
+
+  const cards = document.querySelectorAll(".card");
+
+  cards.forEach(card => {
+    const input = card.querySelector("input");
+
+    const isSelected = input && input.value == servidorSelecionado.id;
+
+    card.classList.toggle("selected", isSelected);
+
+    if (isSelected && !card.querySelector(".status")) {
+      const status = document.createElement("span");
+      status.className = "status";
+      status.textContent = "Selecionado";
+
+      card.querySelector(".card-header")?.appendChild(status);
+
+      input.checked = true;
+    }
+  });
+}
+
+/* ================================
+   PREENCHER FORMULÁRIO
+================================ */
+function preencherFormularioServidor(item) {
+  if (inputNome) inputNome.value = item.nome || "";
+  if (inputCargo) inputCargo.value = item.cargo || "";
+  if (inputExercicio)
+    inputExercicio.value = `${item.siglaUorgEmissao || ""}-${item.ufUorgEmissao || ""}`;
+}
+
+
+/* ================================
+   CONVERSOR DE DATA (EXCEL)
+================================ */
+function converterDataExcel(numero) {
+  if (!numero) return "—";
+
+  const data = new Date((numero - 25569) * 86400 * 1000);
+
+  return data.toLocaleDateString("pt-BR");
+}
+
+function valorSeguro(valor, texto = "Não informado") {
+  return (valor === null || valor === undefined || valor === "")
+    ? `<span class="vazio-texto">${texto}</span>`
+    : valor;
+}
+
+/* ================================
+   SUBMIT FORM
+================================ */
+const formulario = document.getElementById("form_cadastro_atendimento");
+
+formulario.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const dados = Object.fromEntries(new FormData(formulario).entries());
+
+  console.log("Dados enviados:", JSON.stringify(dados, null, 2));
+});
+</script>
 </body>
 </html>
